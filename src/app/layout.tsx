@@ -20,9 +20,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body className={font.className}>
-          <main>
-            {children}
-          </main>
+          {children}
         </body>
       </html>
     </ClerkProvider>
