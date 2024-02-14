@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "cockroachdb"
+  url      = env("DATABASE_URL")
+}
+
+model Profile {
+  id       String @id @default(uuid())
+  userId   String @unique
+  name     String
+  imageUrl String @db.String() //@db.Text for MySQL [decorator]
+  email    String @db.String()
+
+  servers Server[]
+  members Member[]
+  channel Channel[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Server {
+  id         String @id @default(uuid())
+  name       String
+  imageUrl   String @db.String()
+  inviteCode String @db.String()
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members  Member[]
+  channels Channel[]
+
+  profileId String
+  Profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+}
+
+enum MemberRole {
+  ADMIN
+  MODERATOR
+  GUEST
+}
+
+model Member {
+  id   String     @id @default(uuid())
+  role MemberRole @default(GUEST)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId String
+
+  Server   Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  serverId String
+}
+
+enum ChannelType {
+  TEXT
+  AUDIO
+  VIDEO
+}
+
+model Channel {
+  id   String      @id @default(uuid())
+  type ChannelType @default(TEXT)
+  name String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId String
+  Server    Server @relation(fields: [serverId], references: [id])
+  serverId  String
+}
