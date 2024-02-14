@@ -1,3 +1,4 @@
+import InitialModal from '@/components/modals/InitialModal';
 import prisma from '@/db';
 import { initialProfile } from '@/lib/initialProfile';
 import { redirect } from 'next/navigation';
@@ -20,8 +21,11 @@ const SetUpPage = async () => {
     return redirect(`/servers/${server.id}`)
   }
 
+  // only when server does not exist
   return (
-    <div>SetUpPage</div>
+    <div>
+      <InitialModal/>
+    </div>
   )
 }
 
