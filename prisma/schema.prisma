@@ -54,7 +54,7 @@ model Member {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
   profileId String
 
   Server   Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
