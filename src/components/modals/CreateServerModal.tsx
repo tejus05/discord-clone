@@ -1,28 +1,26 @@
 "use client";
 
 import { Dialog, DialogContent, DialogFooter, DialogTitle } from "@/components/ui/dialog";
-import { DialogHeader } from "../ui/dialog";
+import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogDescription } from "@radix-ui/react-dialog";
+import axios from 'axios';
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { z } from "zod"
-import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from "zod";
+import FileUpload from "../FileUpload";
+import { Button } from "../ui/button";
+import { DialogHeader } from "../ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { useEffect, useState } from "react";
-import FileUpload from "../FileUpload";
-import axios from 'axios'
-import { useRouter } from "next/navigation";
+import { useModal } from "@/hooks/useModalStore";
 
-const InitialModal = () => {
+const CreateServerModal = () => {
 
-  const [isMounted, setIsMounted] = useState(false);
+  const { isOpen, onClose, type } = useModal();
+
+  const isModalOpen = isOpen && type === "createServer";
 
   const router = useRouter();
-
-  useEffect(() => {
-    setIsMounted(true);
-  },[])
 
   const FormValidator = z.object({
     name: z.string().min(1, {
@@ -51,18 +49,19 @@ const InitialModal = () => {
 
       form.reset();
       router.refresh();
-      window.location.reload();
+      onClose();
     } catch (error) {
       console.log(error);
     }
   }
 
-  if (!isMounted) {
-    return null;
+  const handleClose = () => {
+    form.reset();
+    onClose();
   }
 
   return (
-    <Dialog open>
+    <Dialog open={isModalOpen} onOpenChange={handleClose}>
       <DialogContent className="bg-white text-black p-0 overflow-hidden">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
@@ -127,4 +126,4 @@ const InitialModal = () => {
   );
 }
 
-export default InitialModal
+export default CreateServerModal

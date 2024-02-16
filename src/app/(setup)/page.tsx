@@ -1,4 +1,4 @@
-import InitialModal from '@/components/modals/InitialModal';
+import CreateServerModal from '@/components/modals/CreateServerModal';
 import prisma from '@/db';
 import { initialProfile } from '@/lib/initialProfile';
 import { redirect } from 'next/navigation';
@@ -24,7 +24,7 @@ const SetUpPage = async () => {
   // only when server does not exist
   return (
     <div>
-      <InitialModal/>
+      <CreateServerModal/>
     </div>
   )
 }
