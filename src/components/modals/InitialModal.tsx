@@ -11,10 +11,14 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useEffect, useState } from "react";
 import FileUpload from "../FileUpload";
+import axios from 'axios'
+import { useRouter } from "next/navigation";
 
 const InitialModal = () => {
 
   const [isMounted, setIsMounted] = useState(false);
+
+  const router = useRouter();
 
   useEffect(() => {
     setIsMounted(true);
@@ -42,7 +46,15 @@ const InitialModal = () => {
   const { formState: {isSubmitting}, handleSubmit, control } = form;
 
   const onSubmit = async (values:TFormValidator) => {
-    console.log(values);
+    try {
+      await axios.post("/api/servers",values);
+
+      form.reset();
+      router.refresh();
+      window.location.reload();
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   if (!isMounted) {
