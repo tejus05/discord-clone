@@ -69,7 +69,8 @@ const InitialModal = () => {
             Customise your server
           </DialogTitle>
           <DialogDescription className="text-center text-zinc-500">
-            Give your server a personality with a name and an image. You can always change it later. 
+            Give your server a personality with a name and an image. You can
+            always change it later.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -90,9 +91,7 @@ const InitialModal = () => {
                       </FormControl>
                     </FormItem>
                   )}
-                >
-
-                </FormField>
+                ></FormField>
               </div>
 
               <FormField
@@ -104,25 +103,28 @@ const InitialModal = () => {
                       Server Name
                     </FormLabel>
                     <FormControl>
-                      <Input {...field}
+                      <Input
+                        {...field}
                         disabled={isSubmitting}
-                        className="bg-zinc-300/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0" placeholder="Enter server name" />
+                        className="bg-zinc-300/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0"
+                        placeholder="Enter server name"
+                      />
                     </FormControl>
-                    <FormMessage/>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
             <DialogFooter className="bg-gray-100 px-6 py-4">
               <Button variant="primary" disabled={isSubmitting}>
-                Create 
+                Create
               </Button>
             </DialogFooter>
           </form>
         </Form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
 
 export default InitialModal
