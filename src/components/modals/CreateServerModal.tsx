@@ -1,18 +1,23 @@
 "use client";
 
-import { Dialog, DialogContent, DialogFooter, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter
+} from "@/components/ui/dialog";
+import { useModal } from "@/hooks/useModalStore";
 import { zodResolver } from '@hookform/resolvers/zod';
-import { DialogDescription } from "@radix-ui/react-dialog";
 import axios from 'axios';
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import FileUpload from "../FileUpload";
 import { Button } from "../ui/button";
-import { DialogHeader } from "../ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
-import { useModal } from "@/hooks/useModalStore";
 
 const CreateServerModal = () => {
 
