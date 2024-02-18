@@ -38,7 +38,7 @@ model Server {
   channels Channel[]
 
   profileId String
-  Profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 }
 
 enum MemberRole {
@@ -57,7 +57,7 @@ model Member {
   profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
   profileId String
 
-  Server   Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  server   Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
   serverId String
 }
 
@@ -75,8 +75,8 @@ model Channel {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
   profileId String
-  Server    Server @relation(fields: [serverId], references: [id])
+  server    Server @relation(fields: [serverId], references: [id])
   serverId  String
 }
