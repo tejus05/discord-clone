@@ -1,7 +1,8 @@
-import { currentProfile } from "@/lib/currentProfile"
-import { redirect } from "next/navigation";
 import prisma from "@/db";
+import { currentProfile } from "@/lib/currentProfile";
 import { ChannelType } from "@prisma/client";
+import { redirect } from "next/navigation";
+import { ScrollArea } from "../ui/scroll-area";
 import ServerHeader from "./ServerHeader";
 
 interface ServerSidebarProps{
@@ -64,6 +65,9 @@ const ServerSidebar = async ({serverId}:ServerSidebarProps) => {
         server={server}
         role={role}
       />
+      <ScrollArea>
+        
+      </ScrollArea>
     </div>
   )
 }

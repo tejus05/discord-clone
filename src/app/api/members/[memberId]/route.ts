@@ -86,7 +86,7 @@ export async function DELETE(request: NextRequest, { params:{ memberId } }:Props
       },
       data: {
         members: {
-          delete: {
+          deleteMany: {
             id: memberId,
             profileId: {
               not: profile.id

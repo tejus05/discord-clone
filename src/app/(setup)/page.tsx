@@ -1,5 +1,5 @@
+import { InitialModal } from '@/components/modals/InitialModal';
 import prisma from '@/db';
-import { useModal } from '@/hooks/useModalStore';
 import { initialProfile } from '@/lib/initialProfile';
 import { redirect } from 'next/navigation';
 
@@ -21,13 +21,10 @@ const SetUpPage = async () => {
     return redirect(`/servers/${server.id}`)
   }
 
-  const { onOpen } = useModal();
-  onOpen("createServer");
-
   // only when server does not exist
   return (
     <div>
-      Home
+      <InitialModal/>
     </div>
   )
 }

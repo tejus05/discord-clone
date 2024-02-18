@@ -77,6 +77,6 @@ model Channel {
 
   profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
   profileId String
-  server    Server @relation(fields: [serverId], references: [id])
+  server    Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
   serverId  String
 }

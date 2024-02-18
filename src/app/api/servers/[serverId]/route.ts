@@ -32,7 +32,31 @@ export async function PATCH(request:NextRequest, {params:{serverId}}:Props) {
     return NextResponse.json(server);
 
   } catch (error) {
-    console.log("[SERVERS PATCH]", error)
+    console.log("[SERVER PATCH]", error)
+    return new NextResponse("Internal Error!", { status: 500 });
+  }
+}
+
+export async function DELETE(request: NextRequest, { params: { serverId } }: Props) {
+  try {
+
+    const profile = await currentProfile();
+
+    if (!profile) {
+      return new NextResponse("Unauthorised", { status: 401 })
+    }
+
+    const server = await prisma.server.delete({
+      where: {
+        id: serverId,
+        profileId: profile.id
+      }
+    })
+
+    return NextResponse.json(server);
+
+  } catch (error) {
+    console.log("[SERVER ID DELETE]", error)
     return new NextResponse("Internal Error!", { status: 500 });
   }
 }
