@@ -28,7 +28,9 @@ const ServerSection = ({label, sectionType, channelType, role, server}:ServerSec
           <button
             className="text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition"
             onClick={() => {
-              onOpen("createChannel");
+              onOpen("createChannel", {
+                channelType
+              });
             }}
           >
             <Plus className="h-4 w-4" />
@@ -36,7 +38,7 @@ const ServerSection = ({label, sectionType, channelType, role, server}:ServerSec
         </ActionTooltip>
       )}
       {role === MemberRole.ADMIN && sectionType === "members" && (
-        <ActionTooltip label="Create Channels" side="top" align="center">
+        <ActionTooltip label="Manage Members" side="top" align="center">
           <button
             className="text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition"
             onClick={() => {

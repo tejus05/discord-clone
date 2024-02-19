@@ -26,9 +26,12 @@ import {
 import { Input } from "../ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import qs from 'query-string'
+import { useEffect } from "react";
 
 const CreateChannelModal = () => {
-  const { isOpen, onClose, type } = useModal();
+  const { isOpen, onClose, type, data } = useModal();
+
+  const { channelType } = data;
 
   const isModalOpen = isOpen && type === "createChannel";
 
@@ -50,7 +53,7 @@ const CreateChannelModal = () => {
   const form = useForm<TFormValidator>({
     defaultValues: {
       name: "",
-      type: "TEXT"
+      type: channelType || "TEXT"
     },
     resolver: zodResolver(FormValidator),
   });
@@ -83,6 +86,12 @@ const CreateChannelModal = () => {
     form.reset();
     onClose();
   };
+
+  useEffect(() => {
+    if (channelType) {
+      form.setValue("type", channelType);
+    }
+  }, [channelType, form]);
 
   return (
     <Dialog open={isModalOpen} onOpenChange={handleClose}>
