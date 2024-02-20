@@ -57,6 +57,13 @@ model Member {
   profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
   profileId String
 
+  messages Message[]
+
+  directMessages DirectMessage[]
+
+  conversationsInitiated Conversation[] @relation("MemberOne")
+  conversationsReceived Conversation[] @relation("MemberTwo")
+
   server   Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
   serverId String
 }
@@ -77,6 +84,58 @@ model Channel {
 
   profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
   profileId String
-  server    Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
-  serverId  String
+
+  server   Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  serverId String
+
+  messages Message[]
+}
+
+model Message {
+  id      String @id @default(uuid())
+  content String @db.String()
+
+  fileUrl String? @db.String()
+
+  member    Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId  String
+
+  channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  channelId String
+
+  deleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Conversation{
+  id String @id @default(uuid())
+
+  memberOneId String
+  memberOne Member @relation("MemberOne",fields: [memberOneId], references: [id], onDelete: Cascade)
+
+  memberTwoId String
+  memberTwo Member @relation("MemberTwo",fields: [memberTwoId], references: [id], onDelete: Cascade)
+
+  directMessages DirectMessage[]
+
+  @@unique([memberOneId,memberTwoId]) //composite unique constraint
+}
+
+model DirectMessage{
+  id String @id @default(uuid())
+  content String @db.String()
+  fileUrl String? @db.String()
+
+  memberId String
+  member Member @relation(fields: [memberId],references: [id],onDelete: Cascade)
+
+  conversationId String
+  conversation Conversation @relation(fields: [conversationId],references: [id], onDelete: Cascade)
+
+  deleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
