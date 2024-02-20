@@ -9,6 +9,7 @@ import EditServerModal from "../modals/EditServerModal";
 import InviteModal from "../modals/InviteModal";
 import LeaveServerModal from "../modals/LeaveServerModal";
 import MembersModal from "../modals/MembersModal";
+import EditChannelModal from "../modals/EditChannelModal";
 
 const ModalProvider = () => {
 
@@ -31,7 +32,8 @@ const ModalProvider = () => {
       <CreateChannelModal/>
       <LeaveServerModal />
       <DeleteServerModal />
-      <DeleteChannelModal/>
+      <DeleteChannelModal />
+      <EditChannelModal/>
     </>
   )
 }

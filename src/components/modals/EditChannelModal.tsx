@@ -5,13 +5,15 @@ import {
   DialogContent,
   DialogFooter,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { useModal } from "@/hooks/useModalStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChannelType } from "@prisma/client";
 import axios from "axios";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import qs from "query-string";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "../ui/button";
@@ -24,28 +26,33 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import qs from 'query-string'
-import { useEffect } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
-const CreateChannelModal = () => {
+const EditChannelModal = () => {
   const { isOpen, onClose, type, data } = useModal();
 
-  const { channelType } = data;
+  const { channel, server } = data;
 
-  const isModalOpen = isOpen && type === "createChannel";
-
-  const params = useParams();
+  const isModalOpen = isOpen && type === "editChannel";
 
   const router = useRouter();
 
   const FormValidator = z.object({
-    name: z.string().min(1, {
-      message: "Channel name is required",
-    }).refine(name => name !== "general", {
-      message: "Channel name cannot be 'general' "
-    }),
-    type: z.nativeEnum(ChannelType)
+    name: z
+      .string()
+      .min(1, {
+        message: "Channel name is required",
+      })
+      .refine((name) => name !== "general", {
+        message: "Channel name cannot be 'general' ",
+      }),
+    type: z.nativeEnum(ChannelType),
   });
 
   type TFormValidator = z.infer<typeof FormValidator>;
@@ -53,7 +60,7 @@ const CreateChannelModal = () => {
   const form = useForm<TFormValidator>({
     defaultValues: {
       name: "",
-      type: channelType || "TEXT"
+      type: channel?.type || "TEXT",
     },
     resolver: zodResolver(FormValidator),
   });
@@ -67,11 +74,11 @@ const CreateChannelModal = () => {
   const onSubmit = async (values: TFormValidator) => {
     try {
       const url = qs.stringifyUrl({
-        url: "/api/channels",
+        url: `/api/channels/${channel?.id}`,
         query: {
-          serverId: params?.serverId
-        }
-      })
+          serverId: server?.id,
+        },
+      });
       await axios.post(url, values);
 
       form.reset();
@@ -88,17 +95,18 @@ const CreateChannelModal = () => {
   };
 
   useEffect(() => {
-    if (channelType) {
-      form.setValue("type", channelType);
+    if (channel) {
+      form.setValue("name", channel.name);
+      form.setValue("type", channel.type);
     }
-  }, [channelType, form, isModalOpen]);
+  }, [channel, form, isModalOpen]);
 
   return (
     <Dialog open={isModalOpen} onOpenChange={handleClose}>
       <DialogContent className="bg-white text-black p-0 overflow-hidden">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
-            Create Channel
+            Edit Channel
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
@@ -129,9 +137,7 @@ const CreateChannelModal = () => {
                 name="type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      Channel Type
-                    </FormLabel>
+                    <FormLabel>Channel Type</FormLabel>
                     <Select
                       disabled={isSubmitting}
                       onValueChange={field.onChange}
@@ -143,25 +149,25 @@ const CreateChannelModal = () => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {
-                          Object.values(ChannelType).map(type => (
-                            <SelectItem key={type} value={type} className="capitalize">
-                              {
-                                type.toLocaleLowerCase()
-                              }
-                            </SelectItem>
-                          ))
-                        }
+                        {Object.values(ChannelType).map((type) => (
+                          <SelectItem
+                            key={type}
+                            value={type}
+                            className="capitalize"
+                          >
+                            {type.toLocaleLowerCase()}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
-                    <FormMessage/>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
             <DialogFooter className="bg-gray-100 px-6 py-4">
               <Button variant="primary" disabled={isSubmitting}>
-                Create
+                Edit
               </Button>
             </DialogFooter>
           </form>
@@ -171,4 +177,4 @@ const CreateChannelModal = () => {
   );
 };
 
-export default CreateChannelModal;
+export default EditChannelModal;
