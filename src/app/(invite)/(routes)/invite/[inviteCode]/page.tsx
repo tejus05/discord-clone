@@ -40,11 +40,9 @@ const InviteCodePage = async ({params:{inviteCode}}:InviteCodePageProps) => {
     },
     data: {
       members: {
-        create: [
-          {
-            profileId: profile.id
-          }
-        ]
+        create: {
+          profileId: profile.id
+        }
       }
     }
   })
