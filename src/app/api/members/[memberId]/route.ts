@@ -110,7 +110,7 @@ export async function DELETE(request: NextRequest, { params:{ memberId } }:Props
 
     
   } catch (error) {
-    console.log(error)
+    console.log("[MEMBERS_DELETE]",error)
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
