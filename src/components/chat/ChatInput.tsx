@@ -1,15 +1,17 @@
 "use client";
 
+import { useModal } from '@/hooks/useModalStore';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Plus, Smile } from 'lucide-react';
+import axios from 'axios';
+import { Plus } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import qs from 'query-string';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Form, FormControl, FormField, FormItem } from '../ui/form'
-import { Input } from '../ui/input'
-import qs from 'query-string'
-import axios from 'axios'
+import EmojiPicker from '../EmojiPicker';
 import { useSocket } from '../providers/SocketProvider';
-import { useModal } from '@/hooks/useModalStore';
+import { Form, FormControl, FormField, FormItem } from '../ui/form';
+import { Input } from '../ui/input';
 
 const formSchema = z.object({
   content: z.string().min(1)
@@ -25,6 +27,8 @@ interface ChatInputProps{
 }
 
 const ChatInput = ({apiUrl, name, query, type}:ChatInputProps) => {
+
+  const router = useRouter();
 
   const { socket } = useSocket();
 
@@ -52,7 +56,12 @@ const ChatInput = ({apiUrl, name, query, type}:ChatInputProps) => {
       
       const channelKey = `chat:${channelId}:messages`;
 
+      // socket?.emit("sent-message", message);
       socket?.emit(channelKey, message);
+
+      form.reset();
+
+      router.refresh();
 
     } catch (error) {
       console.log(error)
@@ -87,7 +96,9 @@ const ChatInput = ({apiUrl, name, query, type}:ChatInputProps) => {
                     {...field}
                   />
                   <div className='absolute top-7 right-8'>
-                    <Smile/>
+                    <EmojiPicker
+                      onChange={(emoji: string)=>field.onChange(`${field.value}${emoji}`)}
+                    />
                   </div>
                 </div>
               </FormControl>
