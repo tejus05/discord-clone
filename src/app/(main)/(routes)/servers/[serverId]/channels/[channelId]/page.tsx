@@ -1,8 +1,9 @@
-import { currentProfile } from "@/lib/currentProfile"
-import { redirectToSignIn } from "@clerk/nextjs";
-import prisma from "@/db";
-import { redirect } from "next/navigation";
 import ChatHeader from "@/components/chat/ChatHeader";
+import ChatInput from "@/components/chat/ChatInput";
+import prisma from "@/db";
+import { currentProfile } from "@/lib/currentProfile";
+import { redirectToSignIn } from "@clerk/nextjs";
+import { redirect } from "next/navigation";
 
 
 interface ChannelIdPageProps{
@@ -39,6 +40,18 @@ const ChannelIdPage = async ({params:{channelId, serverId}}:ChannelIdPageProps) 
         name={channel.name}
         serverId={channel.serverId}
         type="channel"
+      />
+      <div className="flex-1">
+        Future Messages
+      </div>
+      <ChatInput
+        name={channel.name}
+        type="channel"
+        apiUrl="/api/socket/messages"
+        query={{
+          channelId: channel.id,
+          serverId: channel.serverId
+        }}
       />
     </div>
   )
