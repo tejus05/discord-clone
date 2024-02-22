@@ -8,6 +8,7 @@ import { Form, FormControl, FormField, FormItem } from '../ui/form'
 import { Input } from '../ui/input'
 import qs from 'query-string'
 import axios from 'axios'
+import { useSocket } from '../providers/SocketProvider';
 
 const formSchema = z.object({
   content: z.string().min(1)
@@ -23,6 +24,8 @@ interface ChatInputProps{
 }
 
 const ChatInput = ({apiUrl, name, query, type}:ChatInputProps) => {
+
+  const { socket } = useSocket();
 
   const form = useForm<TFormSchema>({
     defaultValues: {
@@ -40,7 +43,13 @@ const ChatInput = ({apiUrl, name, query, type}:ChatInputProps) => {
         query
       })
 
-      await axios.post(url, values);
+      const message = await axios.post(url, values);
+
+      const channelId = message.data?.channelId;
+      
+      const channelKey = `chat:${channelId}:messages`;
+
+      socket?.emit(channelKey, message);
 
     } catch (error) {
       console.log(error)
