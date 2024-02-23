@@ -23,11 +23,15 @@ export const useChatQuery = ({
       url: apiUrl,
       query: {
         cursor: pageParam,
-        [paramKey]: paramValue,
+        [paramKey]: paramValue, 
       }
     }, { skipNull: true });
 
     const res = await fetch(url);
+    // return NextResponse.json({
+    //   items: messages,
+    //   nextCursor
+    // })
     return res.json();
   };
 

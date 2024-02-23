@@ -5,6 +5,8 @@ import { Member, Message, Profile } from "@prisma/client";
 import { Loader2, ServerCrash } from "lucide-react";
 import ChatWelcome from "./ChatWelcome";
 import { Fragment } from "react";
+import ChatItem from "./ChatItem";
+import { format } from 'date-fns'
 
 interface ChatMessagesProps{
   name: string,
@@ -17,6 +19,8 @@ interface ChatMessagesProps{
   paramValue: string,
   type: "channel" | "conversation"
 }
+
+const DATE_FORMAT =  "d MMM yyyy, HH:mm"
 
 type MessageWithMemberWithProfile = Message & {
   member: Member & {
@@ -73,7 +77,19 @@ const ChatMessages = ({apiUrl, chatId, member, name, paramKey, paramValue, socke
                 group.items.map((message:MessageWithMemberWithProfile ) => (
                   <div key={message.id}>
                     {
-                      message.content
+                      <ChatItem
+                        currentMember={member}
+                        key={message.id}
+                        id={message.id}
+                        content={message.content}
+                        fileUrl={message.fileUrl}
+                        deleted={message.deleted}
+                        timestamp={format(new Date(message.createdAt), DATE_FORMAT)}
+                        isUpdated={message.updatedAt !== message.createdAt}
+                        socketUrl={socketUrl}
+                        socketQuery={socketQuery}
+                        member={message.member}
+                      />
                     }
                   </div>
                 ))
