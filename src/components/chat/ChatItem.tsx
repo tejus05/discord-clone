@@ -17,6 +17,7 @@ import { Button } from "../ui/button";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useSocket } from "../providers/SocketProvider";
+import { useModal } from "@/hooks/useModalStore";
 
 const formSchema = z.object({
   content: z.string().min(1)
@@ -51,6 +52,8 @@ const ChatItem = ({ content, currentMember, deleted, fileUrl, id, isUpdated, mem
 
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const { onOpen } = useModal();
 
   const fileType = fileUrl?.split(".").pop();
 
@@ -246,7 +249,10 @@ const ChatItem = ({ content, currentMember, deleted, fileUrl, id, isUpdated, mem
             <ActionTooltip label="Delete">
               <Trash
                 onClick={() => {
-                  setIsDeleting(true);
+                  onOpen("deleteMessage", {
+                    apiUrl: `${socketUrl}/${id}`,
+                    query: socketQuery
+                  })
                 }}
                 className="cursor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition"
               />
