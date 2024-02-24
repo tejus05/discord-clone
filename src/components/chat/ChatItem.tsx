@@ -15,7 +15,7 @@ import { Form, FormControl, FormField, FormItem } from "../ui/form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useSocket } from "../providers/SocketProvider";
 import { useModal } from "@/hooks/useModalStore";
 
@@ -51,7 +51,6 @@ const ChatItem = ({ content, currentMember, deleted, fileUrl, id, isUpdated, mem
   const { socket } = useSocket();
 
   const [isEditing, setIsEditing] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
 
   const { onOpen } = useModal();
 
@@ -83,6 +82,7 @@ const ChatItem = ({ content, currentMember, deleted, fileUrl, id, isUpdated, mem
   const { formState: { isSubmitting } } = form;
 
   const router = useRouter();
+  const params = useParams();
 
   const onSubmit = async (values:TFormSchema) => {
     try {
@@ -122,16 +122,22 @@ const ChatItem = ({ content, currentMember, deleted, fileUrl, id, isUpdated, mem
     }
   }, []);
 
+  const onMemberClick = () => {
+    if (member.id === currentMember.id) return;
+
+    router.push(`/servers/${params?.serverId}/conversations/${member.id}`);
+  }
+
   return (
     <div className="relative group flex items-center hover:bg-black/5 p-4 transition w-full">
       <div className="group flex gap-x-2 items-center w-full">
-        <div className="cursor-pointer hover:drop-shadow-md transition">
+        <div className="cursor-pointer hover:drop-shadow-md transition" onClick={onMemberClick}>
           <UserAvatar src={member.profile.imageUrl} />
         </div>
         <div className="flex flex-col w-full">
           <div className="flex items-center gap-x-2">
             <div className="flex items-center">
-              <p className="font-semibold text-sm hover:underline cursor-pointer">
+              <p className="font-semibold text-sm hover:underline cursor-pointer" onClick={onMemberClick}>
                 {member.profile.name}
               </p>
               <ActionTooltip label={member.role}>
