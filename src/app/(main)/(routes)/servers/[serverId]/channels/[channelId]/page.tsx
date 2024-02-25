@@ -1,36 +1,37 @@
 import ChatHeader from "@/components/chat/ChatHeader";
 import ChatInput from "@/components/chat/ChatInput";
+import ChatMessages from "@/components/chat/ChatMessages";
 import prisma from "@/db";
 import { currentProfile } from "@/lib/currentProfile";
 import { redirectToSignIn } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
-
-interface ChannelIdPageProps{
+interface ChannelIdPageProps {
   params: {
-    channelId: string,
-    serverId: string,
-  }
+    channelId: string;
+    serverId: string;
+  };
 }
 
-const ChannelIdPage = async ({params:{channelId, serverId}}:ChannelIdPageProps) => {
-
+const ChannelIdPage = async ({
+  params: { channelId, serverId },
+}: ChannelIdPageProps) => {
   const profile = await currentProfile();
 
   if (!profile) return redirectToSignIn();
 
   const channel = await prisma.channel.findUnique({
     where: {
-      id: channelId
-    }
-  })
+      id: channelId,
+    },
+  });
 
   const member = await prisma.member.findFirst({
     where: {
       profileId: profile.id,
-      serverId
-    }
-  })
+      serverId,
+    },
+  });
 
   if (!channel || !member) return redirect("/");
 
@@ -41,20 +42,33 @@ const ChannelIdPage = async ({params:{channelId, serverId}}:ChannelIdPageProps) 
         serverId={channel.serverId}
         type="channel"
       />
-      <div className="flex-1">
-        Future Messages
-      </div>
+      <>
+        <ChatMessages
+          member={member}
+          name={channel.name}
+          chatId={channel.id}
+          type="channel"
+          apiUrl="/api/messages"
+          socketUrl="/api/socket/messages"
+          socketQuery={{
+            channelId: channel.id,
+            serverId: channel.serverId,
+          }}
+          paramValue={channel.id}
+          paramKey="channelId"
+        />
+      </>
       <ChatInput
         name={channel.name}
         type="channel"
         apiUrl="/api/socket/messages"
         query={{
           channelId: channel.id,
-          serverId: channel.serverId
+          serverId: channel.serverId,
         }}
       />
     </div>
-  )
-}
+  );
+};
 
-export default ChannelIdPage
+export default ChannelIdPage;
