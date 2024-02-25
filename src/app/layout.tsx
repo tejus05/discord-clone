@@ -7,7 +7,6 @@ import "@uploadthing/react/styles.css";
 import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
 import "./globals.css";
-import QueryProvider from "@/components/providers/QueryProvider";
 
 const font = Open_Sans({ subsets: ["latin"] });
 
@@ -32,12 +31,10 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <QueryProvider>
-              <SocketProvider>
-                <ModalProvider/>
-                {children}
-              </SocketProvider>
-            </QueryProvider>
+            <SocketProvider>
+              <ModalProvider/>
+              {children}
+            </SocketProvider>
           </ThemeProvider>
         </body>
       </html>

@@ -8,7 +8,7 @@ import data from '@emoji-mart/data'
 import { useTheme } from "next-themes"
 
 interface EmojiPickerProps{
-  onChange(values: any): void
+  onChange(values: string): void
 }
 
 const EmojiPicker = ({ onChange }:EmojiPickerProps) => {
