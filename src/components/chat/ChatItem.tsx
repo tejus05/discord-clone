@@ -2,79 +2,66 @@
 
 import { cn } from "@/lib/utils";
 import { Member, MemberRole, Profile } from "@prisma/client";
-import {
-  Edit,
-  FileIcon,
-  ShieldAlert,
-  ShieldCheck,
-  Trash,
-  X,
-} from "lucide-react";
+import { Edit, FileIcon, ShieldAlert, ShieldCheck, Trash, X } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import ActionTooltip from "../ActionTooltip";
 import UserAvatar from "../UserAvatar";
 import { z } from "zod";
-import qs from "query-string";
+import qs from 'query-string'
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem } from "../ui/form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useSocket } from "../providers/SocketProvider";
+import { useModal } from "@/hooks/useModalStore";
 
 const formSchema = z.object({
-  content: z.string().min(1),
-});
+  content: z.string().min(1)
+})
 
 type TFormSchema = z.infer<typeof formSchema>;
 
-interface ChatItemProps {
-  id: string;
-  content: string;
+interface ChatItemProps{
+  id: string,
+  content: string,
   member: Member & {
-    profile: Profile;
-  };
-  timestamp: string;
-  fileUrl: string | null;
-  deleted: boolean;
-  currentMember: Member;
-  isUpdated: boolean;
-  socketUrl: string;
-  socketQuery: Record<string, string>;
+    profile: Profile
+  },
+  timestamp: string,
+  fileUrl: string | null,
+  deleted: boolean,
+  currentMember: Member,
+  isUpdated: boolean,
+  socketUrl: string,
+  socketQuery: Record <string, string>
 }
 
 const roleIconMap = {
-  GUEST: null,
-  MODERATOR: <ShieldCheck className="h-4 w-4 ml-2 text-indigo-500" />,
-  ADMIN: <ShieldAlert className="h-4 w-4 ml-2 text-rose-500" />,
-};
+  "GUEST": null,
+  "MODERATOR": <ShieldCheck className="h-4 w-4 ml-2 text-indigo-500"/>,
+  "ADMIN": <ShieldAlert className="h-4 w-4 ml-2 text-rose-500"/>,
+}
 
-const ChatItem = ({
-  content,
-  currentMember,
-  deleted,
-  fileUrl,
-  id,
-  isUpdated,
-  member,
-  socketQuery,
-  socketUrl,
-  timestamp,
-}: ChatItemProps) => {
+const ChatItem = ({ content, currentMember, deleted, fileUrl, id, isUpdated, member, socketQuery, socketUrl, timestamp }: ChatItemProps) => {
+
   const { socket } = useSocket();
 
   const [isEditing, setIsEditing] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
+
+  const { onOpen } = useModal();
 
   const fileType = fileUrl?.split(".").pop();
 
   const isAdmin = currentMember.role === MemberRole.ADMIN;
   const isModerator = currentMember.role === MemberRole.MODERATOR;
   const isOwner = currentMember.id === member.id;
-  const canDeleteMessage = !deleted && (isAdmin || isModerator || isOwner);
+  const canDeleteMessage = !deleted && (
+    isAdmin || isModerator || isOwner
+  )
   const canEditMessage = !deleted && isOwner && !fileUrl;
   const isPdf = fileType === "pdf" && fileUrl;
   const isImage = !isPdf && fileUrl;
@@ -83,27 +70,26 @@ const ChatItem = ({
     defaultValues: {
       content,
     },
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema)
   });
 
   useEffect(() => {
     form.reset({
-      content,
-    });
-  }, [content]);
+      content
+    })
+  },[content]);
 
-  const {
-    formState: { isSubmitting },
-  } = form;
+  const { formState: { isSubmitting } } = form;
 
   const router = useRouter();
+  const params = useParams();
 
-  const onSubmit = async (values: TFormSchema) => {
+  const onSubmit = async (values:TFormSchema) => {
     try {
       const url = qs.stringifyUrl({
         url: `${socketUrl}/${id}`,
-        query: socketQuery,
-      });
+        query: socketQuery
+      })
 
       const updatedMessage = await axios.patch(url, values);
 
@@ -116,35 +102,42 @@ const ChatItem = ({
       setIsEditing(false);
 
       router.refresh();
+
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-  };
+  }
 
   useEffect(() => {
-    const handleKeyDown = (event: any) => {
+    const handleKeyDown = (event:any) => {
       if (event.key === "Escape" || event.keyCode === 27) {
         setIsEditing(false);
       }
-    };
+    }
 
-    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keydown",handleKeyDown)
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
-    };
+    }
   }, []);
+
+  const onMemberClick = () => {
+    if (member.id === currentMember.id) return;
+
+    router.push(`/servers/${params?.serverId}/conversations/${member.id}`);
+  }
 
   return (
     <div className="relative group flex items-center hover:bg-black/5 p-4 transition w-full">
       <div className="group flex gap-x-2 items-center w-full">
-        <div className="cursor-pointer hover:drop-shadow-md transition">
+        <div className="cursor-pointer hover:drop-shadow-md transition" onClick={onMemberClick}>
           <UserAvatar src={member.profile.imageUrl} />
         </div>
         <div className="flex flex-col w-full">
           <div className="flex items-center gap-x-2">
             <div className="flex items-center">
-              <p className="font-semibold text-sm hover:underline cursor-pointer">
+              <p className="font-semibold text-sm hover:underline cursor-pointer" onClick={onMemberClick}>
                 {member.profile.name}
               </p>
               <ActionTooltip label={member.role}>
@@ -262,7 +255,10 @@ const ChatItem = ({
             <ActionTooltip label="Delete">
               <Trash
                 onClick={() => {
-                  setIsDeleting(true);
+                  onOpen("deleteMessage", {
+                    apiUrl: `${socketUrl}/${id}`,
+                    query: socketQuery
+                  })
                 }}
                 className="cursor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition"
               />
@@ -272,6 +268,6 @@ const ChatItem = ({
       )}
     </div>
   );
-};
+}
 
-export default ChatItem;
+export default ChatItem

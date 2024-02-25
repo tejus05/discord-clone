@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
         }
       })
     }
-    else {
+    else{
       messages = await prisma.message.findMany({
         take: MESSAGES_BATCH,
         where: {
@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.log("[MESSAGES_GET]", error)
-    return new NextResponse("Internal Error", { status: 500 });
+    console.log("[MESSAGES_GET]",error)
+    return new NextResponse("Internal Error",{status:500});
   }
 }
