@@ -1,6 +1,5 @@
 "use client";
 
-import { useChatQuery } from "@/hooks/useChatQuery";
 import { Member, Message, Profile } from "@prisma/client";
 import { Loader2, ServerCrash } from "lucide-react";
 import ChatWelcome from "./ChatWelcome";
@@ -32,12 +31,6 @@ const ChatMessages = ({apiUrl, chatId, member, name, paramKey, paramValue, socke
 
   const queryKey = `chat:${chatId}`;
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = useChatQuery({
-    queryKey,
-    apiUrl,
-    paramKey,
-    paramValue
-  });
 
 
   if (status === "pending") {
@@ -69,7 +62,7 @@ const ChatMessages = ({apiUrl, chatId, member, name, paramKey, paramValue, socke
         type={type}
         name={name}
       />
-      <div className="flex flex-col-reverse mt-auto">
+      {/* <div className="flex flex-col-reverse mt-auto">
         {
           data?.pages?.map((group,i) => (
             <Fragment key={i}>
@@ -97,7 +90,7 @@ const ChatMessages = ({apiUrl, chatId, member, name, paramKey, paramValue, socke
             </Fragment>
           ))
         }
-      </div>
+      </div> */}
     </div>
   )
 }
