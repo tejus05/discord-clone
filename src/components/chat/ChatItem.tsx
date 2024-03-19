@@ -16,7 +16,6 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
-import { useSocket } from "../providers/SocketProvider";
 import { useModal } from "@/hooks/useModalStore";
 
 const formSchema = z.object({
@@ -47,8 +46,6 @@ const roleIconMap = {
 }
 
 const ChatItem = ({ content, currentMember, deleted, fileUrl, id, isUpdated, member, socketQuery, socketUrl, timestamp }: ChatItemProps) => {
-
-  const { socket } = useSocket();
 
   const [isEditing, setIsEditing] = useState(false);
 
@@ -84,29 +81,21 @@ const ChatItem = ({ content, currentMember, deleted, fileUrl, id, isUpdated, mem
   const router = useRouter();
   const params = useParams();
 
-  const onSubmit = async (values:TFormSchema) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const url = qs.stringifyUrl({
         url: `${socketUrl}/${id}`,
-        query: socketQuery
-      })
+        query: socketQuery,
+      });
 
-      const updatedMessage = await axios.patch(url, values);
-
-      const updatedKey = `chat:${updatedMessage.data?.channelId}:messages:update`;
-
-      socket?.emit(updatedKey, updatedMessage);
+      await axios.patch(url, values);
 
       form.reset();
-
       setIsEditing(false);
-
-      router.refresh();
-
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   useEffect(() => {
     const handleKeyDown = (event:any) => {

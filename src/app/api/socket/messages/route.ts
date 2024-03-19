@@ -1,5 +1,7 @@
 import prisma from "@/db";
 import { currentProfile } from "@/lib/currentProfile";
+import { pusherServer } from "@/lib/pusher";
+import { toPusherKey } from "@/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -63,6 +65,10 @@ export async function POST(request: NextRequest) {
         }
       }
     })
+
+    const channelKey = toPusherKey(`chat:${channelId}:messages`);
+
+    pusherServer.trigger(channelKey, "create-message",message);
 
     return NextResponse.json(message);
 

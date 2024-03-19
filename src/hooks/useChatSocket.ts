@@ -1,4 +1,5 @@
-import { useSocket } from "@/components/providers/SocketProvider"
+import { pusherClient } from "@/lib/pusher";
+import { toPusherKey } from "@/lib/utils";
 import { Member, Message, Profile } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
@@ -16,13 +17,15 @@ type MessageWithMemberWithProfile = Message & {
 }
 
 export const useChatSocket = ({addKey, queryKey, updateKey}:ChatSocketProps) => {
-  const { socket } = useSocket();
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (!socket) return;
 
-    socket.on(updateKey, (message: MessageWithMemberWithProfile) => {
+    // update existing message
+
+    pusherClient.subscribe(toPusherKey(updateKey));
+
+    const updateMessageHandler = (message: MessageWithMemberWithProfile) => {
       queryClient.setQueryData([queryKey], (oldData: any) => {
 
         if (!oldData || !oldData.pages || oldData.pages.length === 0) {
@@ -45,9 +48,15 @@ export const useChatSocket = ({addKey, queryKey, updateKey}:ChatSocketProps) => 
           pages: newData
         }
       })
-    });
+    }
 
-    socket.on(addKey, (message: MessageWithMemberWithProfile) => {
+    pusherClient.bind("update-message",updateMessageHandler);
+
+    // add new message
+
+    pusherClient.subscribe(toPusherKey(addKey));
+
+    const createMessageHandler = (message: MessageWithMemberWithProfile) => {
       queryClient.setQueryData([queryKey], (oldData: any) => {
         if (!oldData || !oldData.pages || oldData.pages.length === 0) {
           return {
@@ -72,12 +81,17 @@ export const useChatSocket = ({addKey, queryKey, updateKey}:ChatSocketProps) => 
           pages: newData,
         };
       });
-    });
-
-    return () => {
-      socket.off(addKey);
-      socket.off(updateKey);
     }
 
-  }, [queryClient, addKey, queryKey, socket, updateKey]);
+    pusherClient.bind("create-message", createMessageHandler);
+
+    return () => {
+      pusherClient.unsubscribe(toPusherKey(updateKey));
+      pusherClient.unsubscribe(toPusherKey(addKey));
+      
+      pusherClient.unbind("update-message",updateMessageHandler);
+      pusherClient.unbind("create-message",createMessageHandler);
+    }
+
+  }, [queryClient, addKey, queryKey, updateKey]);
 }

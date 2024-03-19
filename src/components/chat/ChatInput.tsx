@@ -9,7 +9,6 @@ import qs from 'query-string';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import EmojiPicker from '../EmojiPicker';
-import { useSocket } from '../providers/SocketProvider';
 import { Form, FormControl, FormField, FormItem } from '../ui/form';
 import { Input } from '../ui/input';
 
@@ -30,8 +29,6 @@ const ChatInput = ({apiUrl, name, query, type}:ChatInputProps) => {
 
   const router = useRouter();
 
-  const { socket } = useSocket();
-
   const { onOpen } = useModal();
 
   const form = useForm<TFormSchema>({
@@ -43,30 +40,21 @@ const ChatInput = ({apiUrl, name, query, type}:ChatInputProps) => {
 
   const { formState: {isSubmitting}, handleSubmit, control } = form;
 
-  const onSubmit = async (values: TFormSchema) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const url = qs.stringifyUrl({
         url: apiUrl,
-        query
-      })
+        query,
+      });
 
-      const message = await axios.post(url, values);
-
-      const channelId = message.data?.channelId;
-      
-      const channelKey = `chat:${channelId}:messages`;
-
-      // socket?.emit("sent-message", message);
-      socket?.emit(channelKey, message);
+      await axios.post(url, values);
 
       form.reset();
-
       router.refresh();
-
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   return (
     <Form {...form}>

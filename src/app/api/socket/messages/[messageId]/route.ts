@@ -1,5 +1,7 @@
 import prisma from "@/db";
 import { currentProfile } from "@/lib/currentProfile";
+import { pusherServer } from "@/lib/pusher";
+import { toPusherKey } from "@/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
 
 interface Props {
@@ -119,9 +121,9 @@ export async function PATCH(request: NextRequest, { params: { messageId } }: Pro
       })
     }
 
-    // const updatedKey = `chat:${channelId}:messages:update`;
+    const updatedKey = toPusherKey(`chat:${channelId}:messages:update`);
 
-    // socket?.emit(updatedKey, message);
+    pusherServer.trigger(updatedKey, "update-message", message);
 
     return NextResponse.json(message);
 
