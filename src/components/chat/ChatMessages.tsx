@@ -7,7 +7,7 @@ import ChatWelcome from "./ChatWelcome";
 import { Fragment } from "react";
 import ChatItem from "./ChatItem";
 import { format } from 'date-fns'
-import { useChatSocket } from "@/hooks/useChatSocket";
+import { useChatPusher } from "@/hooks/useChatPusher";
 
 interface ChatMessagesProps{
   name: string,
@@ -44,7 +44,7 @@ const ChatMessages = ({apiUrl, chatId, member, name, paramKey, paramValue, socke
   
   
 
-  useChatSocket({queryKey, addKey, updateKey})
+  useChatPusher({queryKey, addKey, updateKey})
 
 
   if (status === "pending") {

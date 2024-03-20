@@ -25,10 +25,6 @@ export const useChatQuery = ({
     }, { skipNull: true });
 
     const res = await fetch(url);
-    // return NextResponse.json({
-    //   items: messages,
-    //   nextCursor
-    // })
     return res.json();
   };
 

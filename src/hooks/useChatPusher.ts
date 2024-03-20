@@ -4,7 +4,7 @@ import { Member, Message, Profile } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 
-interface ChatSocketProps{
+interface ChatPusherProps{
   addKey: string,
   updateKey: string,
   queryKey: string
@@ -16,7 +16,7 @@ type MessageWithMemberWithProfile = Message & {
   }
 }
 
-export const useChatSocket = ({addKey, queryKey, updateKey}:ChatSocketProps) => {
+export const useChatPusher = ({addKey, queryKey, updateKey}:ChatPusherProps) => {
   const queryClient = useQueryClient();
 
   useEffect(() => {

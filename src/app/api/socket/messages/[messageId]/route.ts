@@ -10,7 +10,6 @@ interface Props {
   }
 }
 
-// const { socket } = useSocket();
 
 export async function PATCH(request: NextRequest, { params: { messageId } }: Props) {
   try {
@@ -80,46 +79,24 @@ export async function PATCH(request: NextRequest, { params: { messageId } }: Pro
 
     if (!canModify) return new NextResponse("Unauthorised", { status: 401 })
 
-    if (request.method === "DELETE") {
-      await prisma.message.update({
-        where: {
-          id: messageId
-        },
-        data: {
-          fileUrl: null,
-          content: "This message has been deleted",
-          deleted: true
-        },
-        include: {
-          member: {
-            include: {
-              profile: true
-            }
+    if (!isMessageOwner) {
+      return new NextResponse("Unauthorised", { status: 401 })
+    }
+    message = await prisma.message.update({
+      where: {
+        id: messageId
+      },
+      data: {
+        content
+      },
+      include: {
+        member: {
+          include: {
+            profile: true
           }
         }
-      })
-    }
-
-    if (request.method === "PATCH") {
-      if (!isMessageOwner) {
-        return new NextResponse("Unauthorised", { status: 401 })
       }
-      await prisma.message.update({
-        where: {
-          id: messageId
-        },
-        data: {
-          content
-        },
-        include: {
-          member: {
-            include: {
-              profile: true
-            }
-          }
-        }
-      })
-    }
+    })
 
     const updatedKey = toPusherKey(`chat:${channelId}:messages:update`);
 
@@ -199,7 +176,7 @@ export async function DELETE(request: NextRequest, { params: { messageId } }: Pr
 
     if (!canModify) return new NextResponse("Unauthorised", { status: 401 })
 
-    await prisma.message.update({
+    message = await prisma.message.update({
       where: {
         id: messageId
       },
@@ -216,6 +193,10 @@ export async function DELETE(request: NextRequest, { params: { messageId } }: Pr
         }
       }
     })
+
+    const updatedKey = toPusherKey(`chat:${channelId}:messages:update`);
+
+    pusherServer.trigger(updatedKey, "update-message", message);
 
     return NextResponse.json(message);
 
