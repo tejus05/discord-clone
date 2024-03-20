@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     const member = server.members.find(member => member.profileId === profile.id);
     
     
-    if (!member) return new NextResponse("Member Not found", { status: 404 });
+    if (!member) return new NextResponse("Member not found", { status: 404 });
 
     const message = await prisma.message.create({
       data: {
