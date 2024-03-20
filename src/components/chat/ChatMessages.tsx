@@ -4,10 +4,11 @@ import { useChatQuery } from "@/hooks/useChatQuery";
 import { Member, Message, Profile } from "@prisma/client";
 import { Loader2, ServerCrash } from "lucide-react";
 import ChatWelcome from "./ChatWelcome";
-import { Fragment } from "react";
+import { ElementRef, Fragment, useRef } from "react";
 import ChatItem from "./ChatItem";
 import { format } from 'date-fns'
 import { useChatPusher } from "@/hooks/useChatPusher";
+import { useChatScroll } from "@/hooks/useChatScroll";
 
 interface ChatMessagesProps{
   name: string,
@@ -42,9 +43,18 @@ const ChatMessages = ({apiUrl, chatId, member, name, paramKey, paramValue, socke
     paramValue
   });
   
-  
+  const chatRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
 
   useChatPusher({queryKey, addKey, updateKey})
+
+  useChatScroll({
+    bottomRef,
+    chatRef,
+    count: data?.pages?.[0]?.items?.length ?? 0,
+    loadMore: fetchNextPage,
+    shouldLoadMore: !isFetchingNextPage && !!hasNextPage
+  });
 
 
   if (status === "pending") {
@@ -70,43 +80,55 @@ const ChatMessages = ({apiUrl, chatId, member, name, paramKey, paramValue, socke
   }
 
   return (
-    <div className="flex-1 flex flex-col py-4 overflow-y-auto">
-      <div className="flex-1"/>
-      <ChatWelcome
-        type={type}
-        name={name}
-      />
+    <div ref={chatRef} className="flex-1 flex flex-col py-4 overflow-y-auto">
+      {!hasNextPage && <div className="flex-1" />}
+      {!hasNextPage && <ChatWelcome type={type} name={name} />}
+      {
+        hasNextPage && (
+          <div className="flex justify-center">
+            {
+              isFetchingNextPage ? (
+                <Loader2 className="h-6 w-6 text-zinc-500 animate-spin my-4" />
+              ) : (
+                  <button
+                  onClick={()=>fetchNextPage()}
+                    className="text-zinc-50 hover:text-zinc-600 dark:text-zinc-400 text-sm my-4 dark:hover:text-zinc-300 transition"
+                  >
+                    Load previous messages
+                  </button>
+              )
+            }
+          </div>
+        )
+      }
       <div className="flex flex-col-reverse mt-auto">
-        {
-          data?.pages?.map((group,i) => (
-            <Fragment key={i}>
-              {
-                group.items.map((message:MessageWithMemberWithProfile ) => (
-                  <div key={message.id}>
-                    {
-                      <ChatItem
-                        currentMember={member}
-                        key={message.id}
-                        id={message.id}
-                        content={message.content}
-                        fileUrl={message.fileUrl}
-                        deleted={message.deleted}
-                        timestamp={format(new Date(message.createdAt), DATE_FORMAT)}
-                        isUpdated={message.updatedAt !== message.createdAt}
-                        socketUrl={socketUrl}
-                        socketQuery={socketQuery}
-                        member={message.member}
-                      />
-                    }
-                  </div>
-                ))
-              }
-            </Fragment>
-          ))
-        }
+        {data?.pages?.map((group, i) => (
+          <Fragment key={i}>
+            {group.items.map((message: MessageWithMemberWithProfile) => (
+              <div key={message.id}>
+                {
+                  <ChatItem
+                    currentMember={member}
+                    key={message.id}
+                    id={message.id}
+                    content={message.content}
+                    fileUrl={message.fileUrl}
+                    deleted={message.deleted}
+                    timestamp={format(new Date(message.createdAt), DATE_FORMAT)}
+                    isUpdated={message.updatedAt !== message.createdAt}
+                    socketUrl={socketUrl}
+                    socketQuery={socketQuery}
+                    member={message.member}
+                  />
+                }
+              </div>
+            ))}
+          </Fragment>
+        ))}
       </div>
+      <div ref={bottomRef} />
     </div>
-  )
+  );
 }
 
 export default ChatMessages
