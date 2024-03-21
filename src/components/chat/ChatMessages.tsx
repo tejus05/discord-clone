@@ -1,14 +1,17 @@
 "use client";
 
-import { useChatQuery } from "@/hooks/useChatQuery";
-import { Member, Message, Profile } from "@prisma/client";
-import { Loader2, ServerCrash } from "lucide-react";
-import ChatWelcome from "./ChatWelcome";
-import { ElementRef, Fragment, useRef } from "react";
-import ChatItem from "./ChatItem";
-import { format } from 'date-fns'
 import { useChatPusher } from "@/hooks/useChatPusher";
+import { useChatQuery } from "@/hooks/useChatQuery";
 import { useChatScroll } from "@/hooks/useChatScroll";
+import { pusherClient } from "@/lib/pusher";
+import { toPusherKey } from "@/lib/utils";
+import { Member, Message, Profile } from "@prisma/client";
+import { format } from 'date-fns';
+import { Loader2, ServerCrash } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { Fragment, useEffect, useRef, useState } from "react";
+import ChatItem from "./ChatItem";
+import ChatWelcome from "./ChatWelcome";
 
 interface ChatMessagesProps{
   name: string,
@@ -42,12 +45,13 @@ const ChatMessages = ({apiUrl, chatId, member, name, paramKey, paramValue, socke
     paramKey,
     paramValue
   });
+
   
   const chatRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
-
+  
   useChatPusher({queryKey, addKey, updateKey})
-
+  
   useChatScroll({
     bottomRef,
     chatRef,
@@ -55,7 +59,36 @@ const ChatMessages = ({apiUrl, chatId, member, name, paramKey, paramValue, socke
     loadMore: fetchNextPage,
     shouldLoadMore: !isFetchingNextPage && !!hasNextPage
   });
+  
+  
+  const router = useRouter();
+  const params = useParams();
+  const [shouldRefresh, setShouldRefresh] = useState(false);
 
+  useEffect(() => {
+    pusherClient.subscribe(
+      toPusherKey(`server:${params?.serverId}:member:modify`)
+    );
+
+    pusherClient.subscribe(
+      toPusherKey(`server:${params?.serverId}:member:kick`)
+    );
+
+    const onMemberModify = () => {
+      setShouldRefresh(true);
+      router.refresh();
+      window.location.reload();
+    };
+
+    const onMemberKick = () => {
+      setShouldRefresh(true);
+      router.refresh();
+      window.location.reload();
+    };
+
+    pusherClient.bind("member-kick", onMemberKick);
+    pusherClient.bind("member-modify", onMemberModify);
+  }, [router, params, shouldRefresh, setShouldRefresh]);
 
   if (status === "pending") {
     return (

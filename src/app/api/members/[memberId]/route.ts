@@ -1,6 +1,8 @@
 import { currentProfile } from "@/lib/currentProfile";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/db";
+import { pusherServer } from "@/lib/pusher";
+import { toPusherKey } from "@/lib/utils";
 
 interface Props{
   params: {
@@ -56,6 +58,8 @@ export async function PATCH(request: NextRequest, {params: {memberId}}:Props) {
         }
       }
     })
+
+    await pusherServer.trigger(toPusherKey(`server:${serverId}:member:modify`), "member-modify", true);
     
     return NextResponse.json(server);
 
@@ -105,6 +109,8 @@ export async function DELETE(request: NextRequest, { params:{ memberId } }:Props
         }
       }
     })
+
+    await pusherServer.trigger(toPusherKey(`server:${serverId}:member:kick`), "member-kick", true);
 
     return NextResponse.json(server);
 
