@@ -28,6 +28,8 @@ import FileUpload from "../FileUpload";
 import { useRouter } from "next/navigation";
 import { useModal } from "@/hooks/useModalStore";
 import toast from "react-hot-toast";
+import { Badge } from "../ui/badge";
+import Link from "next/link";
 
 const formSchema = z.object({
   name: z.string().min(1, {
@@ -129,6 +131,18 @@ export const InitialModal = () => {
                   </FormItem>
                 )}
               />
+              <div className="flex justify-center flex-nowrap">
+                <Badge variant="secondary" className="px-3 py-2 md:text-[15px] text-xs rounded-md bg-indigo-600 hover:bg-indigo-700 transition">
+                  To test out, kindly
+                  <Link
+                    className="underline transition mx-1"
+                    href="https://discord-clone-chat-app.vercel.app/invite/3932c48b-e325-48c4-9479-5a7166200ace"
+                  >
+                    click here
+                  </Link>
+                  to join a test server
+                </Badge>
+              </div>
             </div>
             <DialogFooter className="bg-gray-100 px-6 py-4">
               <Button variant="primary" disabled={isLoading}>
