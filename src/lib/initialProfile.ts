@@ -23,7 +23,7 @@ export const initialProfile = async () => {
   const newProfile = await prisma.profile.create({
     data: {
       userId: user.id,
-      name: `${user.firstName} ${user.lastName ?? undefined}`,
+      name: `${user.firstName} ${user.lastName ?? ""}`,
       imageUrl: user.imageUrl,
       email: user.emailAddresses[0].emailAddress
     }

@@ -17,21 +17,21 @@ interface ActionTooltipProps{
 
 const ActionTooltip = ({align, children, label, side}:ActionTooltipProps) => {
   return (
-    <TooltipProvider>
-      <Tooltip delayDuration={50}>
-        <TooltipTrigger asChild>
-          {children}
-        </TooltipTrigger>
-        <TooltipContent side={side} align={align}>
-          <p className="font-semibold text-sm capitalize">
-            {
-              label.toLocaleLowerCase()
-            }
-          </p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-  )
+    <span>
+      <TooltipProvider>
+        <Tooltip delayDuration={50}>
+          <TooltipTrigger asChild className="block z-10">
+            {children}
+          </TooltipTrigger>
+          <TooltipContent side={side} align={align}>
+            <p className="font-semibold text-sm capitalize hidden md:block">
+              {label.toLocaleLowerCase()}
+            </p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    </span>
+  );
 }
 
 export default ActionTooltip
