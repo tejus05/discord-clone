@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import qs from "query-string";
 import { useState } from "react";
 import { Button } from "../ui/button";
+import toast from "react-hot-toast";
 
 const DeleteMessageModal = () => {
   const { isOpen, onClose, type, data } = useModal();
@@ -39,7 +40,7 @@ const DeleteMessageModal = () => {
       onClose();
       
     } catch (error) {
-      console.log(error);
+      toast.error("Could not delete the message! Please try again or refresh the page. ");
     } finally {
       setIsLoading(false);
     }

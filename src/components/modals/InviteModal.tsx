@@ -14,6 +14,7 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const InviteModal = () => {
   const { isOpen, onClose, type, data, onOpen } = useModal();
@@ -46,7 +47,7 @@ const InviteModal = () => {
 
       onOpen("invite", { server: response.data });
     } catch (error) {
-      console.log(error);
+      toast.error("Something went wrong! Please try again or refresh the page. ");
     } finally {
       setIsLoading(false);
     }

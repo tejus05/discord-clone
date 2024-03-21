@@ -24,6 +24,7 @@ import {
 import { useModal } from "@/hooks/useModalStore";
 import { useRouter } from "next/navigation";
 import FileUpload from "../FileUpload";
+import toast from "react-hot-toast";
 
 const formSchema = z.object({
   fileUrl: z.string().min(1, {
@@ -72,7 +73,7 @@ export const MessageFileModal = () => {
       router.refresh();
       handleClose();
     } catch (error) {
-      console.log(error);
+      toast.error("Something went wrong! Please try again or refresh the page. ");
     }
   };
 

@@ -18,6 +18,7 @@ import FileUpload from "../FileUpload";
 import { Button } from "../ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
+import toast from "react-hot-toast";
 
 const CreateServerModal = () => {
 
@@ -56,7 +57,7 @@ const CreateServerModal = () => {
       router.refresh();
       onClose();
     } catch (error) {
-      console.log(error);
+      toast.error("Could not create the server! Please try again or refresh the page. ");
     }
   }
 

@@ -26,6 +26,7 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { useEffect } from "react";
+import toast from "react-hot-toast";
 
 const EditServerModal = () => {
   const { isOpen, onClose, type, data } = useModal();
@@ -76,7 +77,7 @@ const EditServerModal = () => {
       router.refresh();
       onClose();
     } catch (error) {
-      console.log(error);
+      toast.error("Could not edit the server! Please try again or refresh the page. ");
     }
   };
 

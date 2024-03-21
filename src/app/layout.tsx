@@ -7,6 +7,7 @@ import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
 import "./globals.css";
 import QueryProvider from "@/components/providers/QueryProvider";
+import ToastProvider from "@/components/providers/ToastProvider";
 
 const font = Open_Sans({ subsets: ["latin"] });
 
@@ -31,10 +32,12 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <QueryProvider>
-                <ModalProvider/>
-                {children}
-            </QueryProvider>
+            <ToastProvider>
+              <QueryProvider>
+                  <ModalProvider/>
+                  {children}
+              </QueryProvider>
+            </ToastProvider>
           </ThemeProvider>
         </body>
       </html>

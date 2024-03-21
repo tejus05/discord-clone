@@ -18,6 +18,7 @@ import { ScrollArea } from "../ui/scroll-area";
 import qs from 'query-string'
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 const roleIconMap = {
   "GUEST": null,
@@ -52,7 +53,7 @@ const MembersModal = () => {
 
       onOpen("members", { server: response.data });
     } catch (error) {
-      console.log(error)
+      toast.error("Could not change the role! Please try again or refresh the page. ");
     } finally {
       setLoadingId("");
     }
@@ -77,7 +78,7 @@ const MembersModal = () => {
       onOpen("members", { server: response.data });
       
     } catch (error) {
-      console.log(error);
+      toast.error("Could not kick the member! Please try again or refresh the page. ");
     } finally {
       setLoadingId("");
     }

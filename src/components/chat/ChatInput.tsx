@@ -11,6 +11,7 @@ import { z } from 'zod';
 import EmojiPicker from '../EmojiPicker';
 import { Form, FormControl, FormField, FormItem } from '../ui/form';
 import { Input } from '../ui/input';
+import toast from 'react-hot-toast';
 
 const formSchema = z.object({
   content: z.string().min(1)
@@ -52,7 +53,7 @@ const ChatInput = ({apiUrl, name, query, type}:ChatInputProps) => {
       form.reset();
       router.refresh();
     } catch (error) {
-      console.log(error);
+      toast.error("Could not send the message! Please try again or refresh the page. ");
     }
   };
 

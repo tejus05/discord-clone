@@ -16,6 +16,7 @@ import { useParams, useRouter } from "next/navigation";
 import qs from 'query-string'
 import { pusherClient } from "@/lib/pusher";
 import { toPusherKey } from "@/lib/utils";
+import toast from "react-hot-toast";
 
 const DeleteChannelModal = () => {
   const { isOpen, onClose, type, data } = useModal();
@@ -60,7 +61,7 @@ const DeleteChannelModal = () => {
       router.refresh();
       onClose();
     } catch (error) {
-      console.log(error);
+      toast.error("Could not delete the channel! Please try again or refresh the page. ");
       setIsChannelDeleted(false);
     } finally {
       setIsLoading(false);

@@ -13,6 +13,7 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 const LeaveServerModal = () => {
   const { isOpen, onClose, type, data } = useModal();
@@ -35,7 +36,7 @@ const LeaveServerModal = () => {
       router.refresh();
       
     } catch (error) {
-      console.log(error)
+      toast.error("Could not leave the server! Please try again or refresh the page. ");
     } finally {
       setIsLoading(false);
     }

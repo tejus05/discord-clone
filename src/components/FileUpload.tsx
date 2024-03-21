@@ -3,6 +3,7 @@
 import { UploadDropzone } from "@/lib/uploadthing";
 import { FileIcon, X } from "lucide-react";
 import Image from "next/image";
+import toast from "react-hot-toast";
 
 interface FileUploadProps{
   onChange(url?: string): void,
@@ -70,7 +71,7 @@ const FileUpload = ({
         onChange(res[0].url) // potential error
       }}
       onUploadError={(error:Error) => {
-        console.log(error)
+        toast.error("Could not upload! Please try again or refresh the page. ")
       }}
     />
   )

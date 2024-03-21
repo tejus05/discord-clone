@@ -35,6 +35,7 @@ import {
 } from "../ui/select";
 import { pusherClient } from "@/lib/pusher";
 import { toPusherKey } from "@/lib/utils";
+import toast from "react-hot-toast";
 
 const EditChannelModal = () => {
   const { isOpen, onClose, type, data } = useModal();
@@ -104,7 +105,7 @@ const EditChannelModal = () => {
       router.refresh();
       onClose();
     } catch (error) {
-      console.log(error);
+      toast.error("Could not edit the channel! Please try again or refresh the page. ");
       setIsChannelUpdated(false);
     }
   };

@@ -17,6 +17,7 @@ import { Button } from "../ui/button";
 import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
 import { useModal } from "@/hooks/useModalStore";
+import toast from "react-hot-toast";
 
 const formSchema = z.object({
   content: z.string().min(1)
@@ -93,7 +94,7 @@ const ChatItem = ({ content, currentMember, deleted, fileUrl, id, isUpdated, mem
       form.reset();
       setIsEditing(false);
     } catch (error) {
-      console.log(error);
+      toast.error("Could not edit the message! Please try again or refresh the page. ");
     }
   };
 

@@ -27,6 +27,7 @@ import { Button } from "@/components/ui/button";
 import FileUpload from "../FileUpload";
 import { useRouter } from "next/navigation";
 import { useModal } from "@/hooks/useModalStore";
+import toast from "react-hot-toast";
 
 const formSchema = z.object({
   name: z.string().min(1, {
@@ -67,7 +68,7 @@ export const InitialModal = () => {
       window.location.reload();
       onClose();
     } catch (error) {
-      console.log(error);
+      toast.error("Could not create the server! Please try again or refresh the page. ");
     }
   };
 

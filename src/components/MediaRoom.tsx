@@ -5,6 +5,7 @@ import { LiveKitRoom, VideoConference } from "@livekit/components-react";
 import "@livekit/components-styles";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 interface MediaRoomProps {
   chatId: string,
@@ -28,7 +29,7 @@ export const MediaRoom = ({ chatId, video, audio }: MediaRoomProps) => {
         const data = await response.json();
         setToken(data.token);
       } catch (error) {
-        console.log(error);
+        toast.error("Could not load the room! Please try again or refresh the page. ");
       }
     })();
   }, [user?.firstName, user?.lastName, chatId, audio, video]);
