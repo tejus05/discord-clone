@@ -43,7 +43,7 @@ const DeleteChannelModal = () => {
     };
 
     pusherClient.bind("channel-delete", onChannelDelete);
-  }, [server?.id, setIsChannelDeleted, isChannelDeleted, channel?.id, params]);
+  }, [server?.id, setIsChannelDeleted, isChannelDeleted, channel?.id, params, router]);
 
   const onClick = async () => {
     try {

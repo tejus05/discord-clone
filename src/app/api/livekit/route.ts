@@ -3,8 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
-    const room = req.nextUrl.searchParams.get("room");
-    const username = req.nextUrl.searchParams.get("username");
+    const { searchParams } = new URL(req.url);
+    const room = searchParams.get("room");
+    const username = searchParams.get("username");
     if (!room) {
       return NextResponse.json(
         { error: 'Missing "room" query parameter' },
@@ -34,6 +35,6 @@ export async function GET(req: NextRequest) {
   
     return NextResponse.json({ token: await at.toJwt() });
   } catch (error) {
-    console.log(error)
+    return new NextResponse("An unexpected error occurred", { status: 500 })
   }
 }
