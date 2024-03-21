@@ -121,13 +121,19 @@ const ChatItem = ({ content, currentMember, deleted, fileUrl, id, isUpdated, mem
   return (
     <div className="relative group flex items-center hover:bg-black/5 p-4 transition w-full">
       <div className="group flex gap-x-2 items-center w-full">
-        <div className="cursor-pointer hover:drop-shadow-md transition" onClick={onMemberClick}>
+        <div
+          className="cursor-pointer hover:drop-shadow-md transition"
+          onClick={onMemberClick}
+        >
           <UserAvatar src={member.profile.imageUrl} />
         </div>
         <div className="flex flex-col w-full">
           <div className="flex items-center gap-x-2">
             <div className="flex items-center">
-              <p className="font-semibold text-sm hover:underline cursor-pointer" onClick={onMemberClick}>
+              <p
+                className="font-semibold text-sm hover:underline cursor-pointer"
+                onClick={onMemberClick}
+              >
                 {member.profile.name}
               </p>
               <ActionTooltip label={member.role}>
@@ -213,7 +219,7 @@ const ChatItem = ({ content, currentMember, deleted, fileUrl, id, isUpdated, mem
                 </Button>
               </form>
               <span className="text-[10px] mt-1 text-zinc-400">
-                Press "Esc" to cancel and "Enter" to save.
+                Press &quot;Esc&quot; to cancel and &quot;Enter&quot; to save.
               </span>
             </Form>
           )}
@@ -247,8 +253,8 @@ const ChatItem = ({ content, currentMember, deleted, fileUrl, id, isUpdated, mem
                 onClick={() => {
                   onOpen("deleteMessage", {
                     apiUrl: `${socketUrl}/${id}`,
-                    query: socketQuery
-                  })
+                    query: socketQuery,
+                  });
                 }}
                 className="cursor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition"
               />
