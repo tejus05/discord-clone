@@ -88,6 +88,19 @@ const ChatMessages = ({apiUrl, chatId, member, name, paramKey, paramValue, socke
 
     pusherClient.bind("member-kick", onMemberKick);
     pusherClient.bind("member-modify", onMemberModify);
+
+    return () => {
+      pusherClient.unsubscribe(
+        toPusherKey(`server:${params?.serverId}:member:modify`)
+      );
+
+      pusherClient.unsubscribe(
+        toPusherKey(`server:${params?.serverId}:member:kick`)
+      );
+
+      pusherClient.unbind("member-kick", onMemberKick);
+      pusherClient.unbind("member-modify", onMemberModify);
+    }
   }, [router, params, shouldRefresh, setShouldRefresh]);
 
   if (status === "pending") {

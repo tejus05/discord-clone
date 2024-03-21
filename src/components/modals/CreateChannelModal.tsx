@@ -54,6 +54,13 @@ const CreateChannelModal = () => {
     };
 
     pusherClient.bind("channel-create", onChannelCreate);
+
+    return () => {
+      pusherClient.unsubscribe(
+        toPusherKey(`server:${params?.serverId}:channel:create`)
+      );
+      pusherClient.unbind("channel-create", onChannelCreate);
+    }
   }, [params, isChannelCreated, setIsChannelCreated, router]);
 
   const FormValidator = z.object({

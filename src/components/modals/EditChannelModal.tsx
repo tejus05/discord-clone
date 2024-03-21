@@ -60,6 +60,15 @@ const EditChannelModal = () => {
     };
 
     pusherClient.bind("channel-update", onChannelUpdate);
+
+    return () => {
+      pusherClient.unsubscribe(
+        toPusherKey(`server:${params?.serverId}:channel:update`)
+      );
+
+      pusherClient.unbind("channel-update", onChannelUpdate);
+
+    }
   }, [server?.id, setIsChannelUpdated, isChannelUpdated, channel?.id, params, router]);
 
   const FormValidator = z.object({
