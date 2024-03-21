@@ -9,11 +9,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useModal } from "@/hooks/useModalStore";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import qs from 'query-string'
+import { pusherClient } from "@/lib/pusher";
+import { toPusherKey } from "@/lib/utils";
 
 const DeleteChannelModal = () => {
   const { isOpen, onClose, type, data } = useModal();
@@ -22,9 +24,25 @@ const DeleteChannelModal = () => {
 
   const { server, channel } = data;
 
+  const params = useParams();
+
   const isModalOpen = isOpen && type === "deleteChannel";
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isChannelDeleted, setIsChannelDeleted] = useState(false);
+  
+  useEffect(() => {
+    pusherClient.subscribe(
+      toPusherKey(`server:${params?.serverId}:channel:delete`)
+    );
+
+    const onChannelDelete = () => {
+      setIsChannelDeleted(true);
+      router.refresh();
+    };
+
+    pusherClient.bind("channel-delete", onChannelDelete);
+  }, [server?.id, setIsChannelDeleted, isChannelDeleted, channel?.id, params]);
 
   const onClick = async () => {
     try {
@@ -36,12 +54,14 @@ const DeleteChannelModal = () => {
         }
       })
       await axios.delete(url);
+      setIsChannelDeleted(true);
 
       router.push(`/servers/${server?.id}`);
       router.refresh();
       onClose();
     } catch (error) {
       console.log(error);
+      setIsChannelDeleted(false);
     } finally {
       setIsLoading(false);
     }

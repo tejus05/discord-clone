@@ -2,6 +2,8 @@ import { currentProfile } from "@/lib/currentProfile";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/db";
 import { MemberRole } from "@prisma/client";
+import { pusherServer } from "@/lib/pusher";
+import { toPusherKey } from "@/lib/utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,6 +21,8 @@ export async function POST(request: NextRequest) {
     if (!serverId) return new NextResponse("Server ID Missing", { status: 400 });
 
     if (name === "general") return new NextResponse("Name cannot be 'general'", { status: 400 });
+
+    pusherServer.trigger(toPusherKey(`server:${serverId}:channel:create`), "channel-create", true);
 
     const server = await prisma.server.update({
       where: {

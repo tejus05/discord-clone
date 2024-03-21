@@ -11,9 +11,9 @@ import { useModal } from "@/hooks/useModalStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChannelType } from "@prisma/client";
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import qs from "query-string";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "../ui/button";
@@ -33,6 +33,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { pusherClient } from "@/lib/pusher";
+import { toPusherKey } from "@/lib/utils";
 
 const EditChannelModal = () => {
   const { isOpen, onClose, type, data } = useModal();
@@ -42,6 +44,22 @@ const EditChannelModal = () => {
   const isModalOpen = isOpen && type === "editChannel";
 
   const router = useRouter();
+  const params = useParams();
+
+  const [isChannelUpdated, setIsChannelUpdated]=useState(false);
+
+  useEffect(() => {
+    pusherClient.subscribe(
+      toPusherKey(`server:${params?.serverId}:channel:update`)
+    );
+
+    const onChannelUpdate = () => {
+      setIsChannelUpdated(true);
+      router.refresh();
+    };
+
+    pusherClient.bind("channel-delete", onChannelUpdate);
+  }, [server?.id, setIsChannelUpdated, isChannelUpdated, channel?.id, params]);
 
   const FormValidator = z.object({
     name: z
@@ -80,12 +98,14 @@ const EditChannelModal = () => {
         },
       });
       await axios.patch(url, values);
+      setIsChannelUpdated(true);
 
       form.reset();
       router.refresh();
       onClose();
     } catch (error) {
       console.log(error);
+      setIsChannelUpdated(false);
     }
   };
 

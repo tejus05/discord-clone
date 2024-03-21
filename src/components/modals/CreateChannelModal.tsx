@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { useModal } from "@/hooks/useModalStore";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChannelType } from "@prisma/client";
+import { ChannelType, Server } from "@prisma/client";
 import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -26,10 +26,13 @@ import {
 import { Input } from "../ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import qs from 'query-string'
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { pusherClient } from "@/lib/pusher";
+import { toPusherKey } from "@/lib/utils";
 
 const CreateChannelModal = () => {
   const { isOpen, onClose, type, data } = useModal();
+  const [isChannelCreated, setIsChannelCreated] = useState(false);
 
   const { channelType } = data;
 
@@ -38,6 +41,19 @@ const CreateChannelModal = () => {
   const params = useParams();
 
   const router = useRouter();
+
+  useEffect(() => {
+    pusherClient.subscribe(
+      toPusherKey(`server:${params?.serverId}:channel:create`)
+    );
+
+    const onChannelCreate = () => {
+      router.refresh();
+      setIsChannelCreated(true);
+    };
+
+    pusherClient.bind("channel-create", onChannelCreate);
+  }, [params, isChannelCreated, setIsChannelCreated]);
 
   const FormValidator = z.object({
     name: z.string().min(1, {
@@ -73,12 +89,14 @@ const CreateChannelModal = () => {
         }
       })
       await axios.post(url, values);
+      setIsChannelCreated(true);
 
       form.reset();
       router.refresh();
       onClose();
     } catch (error) {
       console.log(error);
+      setIsChannelCreated(false);
     }
   };
 

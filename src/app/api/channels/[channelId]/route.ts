@@ -1,6 +1,8 @@
 import { currentProfile } from "@/lib/currentProfile";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/db";
+import { pusherServer } from "@/lib/pusher";
+import { toPusherKey } from "@/lib/utils";
 
 interface Props{
   params: {
@@ -23,6 +25,8 @@ export async function DELETE(request: NextRequest, {params: {channelId}}:Props) 
     if (!channelId) return new NextResponse("Channel ID Missing", {
       status: 400
     });
+
+    pusherServer.trigger(toPusherKey(`server:${serverId}:channel:delete`), "channel-delete", true);
 
     const server = await prisma.server.update({
       where: {
@@ -79,6 +83,8 @@ export async function PATCH(request: NextRequest, {params: {channelId}}:Props) {
     });
 
     if (name === "general") return new NextResponse("Name cannot be 'general'", { status: 400 });
+
+    pusherServer.trigger(toPusherKey(`server:${serverId}:channel:update`), "channel-update", true);
 
     const server = await prisma.server.update({
       where: {
