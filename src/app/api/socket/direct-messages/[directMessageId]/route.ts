@@ -106,7 +106,7 @@ export async function PATCH(request: NextRequest, { params: { directMessageId } 
 
     const updatedKey = toPusherKey(`chat:${conversation.id}:messages:update`);
 
-    pusherServer.trigger(updatedKey, "update-message", directMessage);
+    await pusherServer.trigger(updatedKey, "update-message", directMessage);
 
     return NextResponse.json(directMessage);
 
@@ -212,7 +212,7 @@ export async function DELETE(request: NextRequest, { params: { directMessageId }
 
     const updatedKey = toPusherKey(`chat:${conversation.id}:messages:update`);
 
-    pusherServer.trigger(updatedKey, "update-message", directMessage);
+    await pusherServer.trigger(updatedKey, "update-message", directMessage);
 
     return NextResponse.json(directMessage);
 

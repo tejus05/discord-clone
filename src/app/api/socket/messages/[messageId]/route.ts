@@ -100,7 +100,7 @@ export async function PATCH(request: NextRequest, { params: { messageId } }: Pro
 
     const updatedKey = toPusherKey(`chat:${channelId}:messages:update`);
 
-    pusherServer.trigger(updatedKey, "update-message", message);
+    await pusherServer.trigger(updatedKey, "update-message", message);
 
     return NextResponse.json(message);
 
@@ -196,7 +196,7 @@ export async function DELETE(request: NextRequest, { params: { messageId } }: Pr
 
     const updatedKey = toPusherKey(`chat:${channelId}:messages:update`);
 
-    pusherServer.trigger(updatedKey, "update-message", message);
+    await pusherServer.trigger(updatedKey, "update-message", message);
 
     return NextResponse.json(message);
 

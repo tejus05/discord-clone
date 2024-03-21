@@ -26,7 +26,7 @@ export async function DELETE(request: NextRequest, {params: {channelId}}:Props) 
       status: 400
     });
 
-    pusherServer.trigger(toPusherKey(`server:${serverId}:channel:delete`), "channel-delete", true);
+    await pusherServer.trigger(toPusherKey(`server:${serverId}:channel:delete`), "channel-delete", true);
 
     const server = await prisma.server.update({
       where: {
@@ -84,7 +84,7 @@ export async function PATCH(request: NextRequest, {params: {channelId}}:Props) {
 
     if (name === "general") return new NextResponse("Name cannot be 'general'", { status: 400 });
 
-    pusherServer.trigger(toPusherKey(`server:${serverId}:channel:update`), "channel-update", true);
+    await pusherServer.trigger(toPusherKey(`server:${serverId}:channel:update`), "channel-update", true);
 
     const server = await prisma.server.update({
       where: {

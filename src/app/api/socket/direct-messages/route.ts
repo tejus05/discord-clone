@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
 
     const channelKey = toPusherKey(`chat:${conversationId}:messages`);
 
-    pusherServer.trigger(channelKey, "create-message", message);
+    await pusherServer.trigger(channelKey, "create-message", message);
 
     return NextResponse.json(message);
 

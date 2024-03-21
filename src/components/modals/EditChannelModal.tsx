@@ -58,7 +58,7 @@ const EditChannelModal = () => {
       router.refresh();
     };
 
-    pusherClient.bind("channel-delete", onChannelUpdate);
+    pusherClient.bind("channel-update", onChannelUpdate);
   }, [server?.id, setIsChannelUpdated, isChannelUpdated, channel?.id, params]);
 
   const FormValidator = z.object({

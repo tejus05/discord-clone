@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
 
     if (name === "general") return new NextResponse("Name cannot be 'general'", { status: 400 });
 
-    pusherServer.trigger(toPusherKey(`server:${serverId}:channel:create`), "channel-create", true);
+    await pusherServer.trigger(toPusherKey(`server:${serverId}:channel:create`), "channel-create", true);
 
     const server = await prisma.server.update({
       where: {
