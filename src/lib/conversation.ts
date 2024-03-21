@@ -1,7 +1,7 @@
 import prisma from "@/db";
 
 export const getOrCreateConversation = async (memberOneId: string, memberTwoId: string) => {
-  let conversation = await findConversation(memberOneId, memberTwoId) || await createNewConversation(memberOneId, memberTwoId);
+  let conversation = await findConversation(memberOneId, memberTwoId) || await findConversation(memberTwoId, memberOneId);
 
   if (!conversation) {
     conversation = await createNewConversation(memberOneId, memberTwoId);
@@ -15,24 +15,24 @@ const findConversation = async (memberOneId: string, memberTwoId: string) => {
     return await prisma.conversation.findFirst({
       where: {
         AND: [
-          {memberOneId},
-          {memberTwoId},
+          { memberOneId: memberOneId },
+          { memberTwoId: memberTwoId },
         ]
       },
       include: {
         memberOne: {
           include: {
-            profile: true
+            profile: true,
           }
         },
         memberTwo: {
           include: {
-            profile: true
+            profile: true,
           }
-        },
+        }
       }
-    })
-  } catch (error) {
+    });
+  } catch {
     return null;
   }
 }
@@ -42,22 +42,22 @@ const createNewConversation = async (memberOneId: string, memberTwoId: string) =
     return await prisma.conversation.create({
       data: {
         memberOneId,
-        memberTwoId
+        memberTwoId,
       },
       include: {
         memberOne: {
           include: {
-            profile: true
+            profile: true,
           }
         },
         memberTwo: {
           include: {
-            profile: true
+            profile: true,
           }
         }
       }
     })
-  } catch (error) {
+  } catch {
     return null;
   }
 }

@@ -72,6 +72,8 @@ const MembersModal = () => {
 
       router.refresh();
 
+      router.push("/");
+
       onOpen("members", { server: response.data });
       
     } catch (error) {

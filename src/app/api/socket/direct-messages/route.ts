@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
 
     if (!conversation) return new NextResponse("Conversation not found", { status: 404 });
 
-    const member = conversation.memberOne.profileId === profile.id ? conversation.memberTwo : conversation.memberTwo;
+    const member = conversation.memberOne.profileId === profile.id ? conversation.memberOne : conversation.memberTwo;
 
     if (!member) return new NextResponse("Member not found", { status: 404 });
 
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
       data: {
         content,
         fileUrl,
-        conversationId,
+        conversationId: conversationId as string,
         memberId: member.id
       },
       include: {

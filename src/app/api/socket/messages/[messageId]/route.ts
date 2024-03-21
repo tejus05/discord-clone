@@ -24,8 +24,8 @@ export async function PATCH(request: NextRequest, { params: { messageId } }: Pro
     const serverId = searchParams.get('serverId');
     const channelId = searchParams.get('channelId');
 
-    if (!serverId) return new NextResponse("Server ID", { status: 400 })
-    if (!channelId) return new NextResponse("Channel ID", { status: 400 })
+    if (!serverId) return new NextResponse("Server ID Missing", { status: 400 })
+    if (!channelId) return new NextResponse("Channel ID Missing", { status: 400 })
 
     const server = await prisma.server.findFirst({
       where: {
