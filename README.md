@@ -74,8 +74,22 @@ To run this project locally, follow these steps:
    ```
    Replace `your_clerk_publishable_key_here`, `your_clerk_secret_key_here`, and other placeholder values with your actual credentials.
 5. Install dependencies: `npm install`
-6. Start the development server: `npm run dev`
-7. Open your browser and visit `http://localhost:3000`
+6. **Prisma Setup**: Follow these steps to set up Prisma for database migrations:
+   - Install Prisma globally:
+     ```bash
+     npm install -g prisma
+     ```
+   - Initialize Prisma in your project:
+     ```bash
+     prisma init
+     ```
+   - Configure your database connection in the generated `prisma/schema.prisma` file.
+   - Create an initial migration and apply it to the database:
+     ```bash
+     npx prisma migrate dev
+     ```
+7. Start the development server: `npm run dev`
+8. Open your browser and visit `http://localhost:3000`
 
 ## Usage
 Once the development server is running, you can start using the Discord clone. Navigate through different servers, channels, send messages, and explore the functionalities.
